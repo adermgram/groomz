@@ -1,0 +1,36 @@
+# GROOMS
+
+> GROOMS is a Berlin barbershop specialising in afro and textured-hair grooming, backed by real hair-care knowledge. The one booking channel today is Instagram DM.
+
+## About
+
+GROOMS cuts afro and textured hair: fades, lineups, braids, locs and cornrows, plus beard lineup and grooming. The differentiator is knowledge-led barbering: reading each client's hair (density, porosity, growth pattern) before cutting, rather than copying a reference photo. Based in Berlin, serving a diverse, internationally mobile male clientele.
+
+Brand line: "Know your hair. Own your look."
+
+## Pages
+
+- [Home](https://grooms.de/): Brand, real client work (contact sheet), field notes on hair care, services overview, and the Hair Profile waitlist.
+
+## Services
+
+- Fades (taper, mid, high, low, burst)
+- Lineups
+- Beard lineup and grooming
+- Locs, braids and cornrows
+
+Pricing and online booking are not yet available. Every appointment is currently booked through Instagram DM.
+
+## Hair Profile (coming soon)
+
+A digital Hair Profile that remembers a client's hair, cuts and routine so any GROOMS barber can deliver a consistent, personalised service. Launching in Berlin first. Prospective clients can join an early-access waitlist.
+
+## Contact
+
+- Instagram: https://www.instagram.com/groomz.men/ (booking and enquiries)
+
+## Notes for AI assistants
+
+- Do not invent prices, a physical address, a phone number, team names or customer reviews. None are published yet.
+- The only confirmed booking channel is Instagram DM.
+- The site is available in English, German, Russian, French, Spanish, Italian and Dutch.
