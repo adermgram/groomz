@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { admin } from "../../../../lib/supabase-admin";
 import { sendReminder } from "../../../../lib/mail";
+import { baseUrlFrom } from "../../../../lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ export async function GET(req: Request) {
 
   let sent = 0;
   for (const b of (data ?? []) as any[]) {
-    await sendReminder({ ...b, service_name: b.services.name });
+    await sendReminder({ ...b, service_name: b.services.name }, baseUrlFrom(req.headers));
     await db.from("bookings").update({ reminder_sent: true }).eq("id", b.id);
     sent++;
   }

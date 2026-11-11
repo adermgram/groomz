@@ -3,6 +3,7 @@ import { admin } from "../../../lib/supabase-admin";
 import { getSlots } from "../../../lib/slots";
 import { sendConfirmation } from "../../../lib/mail";
 import { berlinDateStr } from "../../../lib/tz";
+import { baseUrlFrom } from "../../../lib/site";
 
 export async function POST(req: Request) {
   const b = await req.json().catch(() => null);
@@ -47,6 +48,6 @@ export async function POST(req: Request) {
     ends_at: end.toISOString(),
     manage_token: data.manage_token,
     service_name: svc.name,
-  });
+  }, false, baseUrlFrom(req.headers));
   return NextResponse.json({ ok: true, token: data.manage_token });
 }

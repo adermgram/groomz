@@ -3,6 +3,7 @@ import { admin } from "../../../../lib/supabase-admin";
 import { getSlots } from "../../../../lib/slots";
 import { sendCancellation, sendConfirmation } from "../../../../lib/mail";
 import { berlinDateStr } from "../../../../lib/tz";
+import { baseUrlFrom } from "../../../../lib/site";
 
 type Ctx = { params: Promise<{ token: string }> };
 
@@ -49,7 +50,7 @@ export async function POST(req: Request, { params }: Ctx) {
 
   if (body?.action === "cancel") {
     await db.from("bookings").update({ status: "cancelled" }).eq("id", b.id);
-    await sendCancellation({ ...mb, starts_at: b.starts_at, ends_at: b.ends_at }, true);
+    await sendCancellation({ ...mb, starts_at: b.starts_at, ends_at: b.ends_at }, true, baseUrlFrom(req.headers));
     return NextResponse.json({ ok: true });
   }
 
@@ -64,7 +65,7 @@ export async function POST(req: Request, { params }: Ctx) {
       .update({ starts_at: start.toISOString(), ends_at: end.toISOString(), reminder_sent: false })
       .eq("id", b.id);
     if (error) return NextResponse.json({ error: error.code === "23P01" ? "slot_unavailable" : "db" }, { status: 409 });
-    await sendConfirmation({ ...mb, starts_at: start.toISOString(), ends_at: end.toISOString() }, true);
+    await sendConfirmation({ ...mb, starts_at: start.toISOString(), ends_at: end.toISOString() }, true, baseUrlFrom(req.headers));
     return NextResponse.json({ ok: true });
   }
   return NextResponse.json({ error: "invalid" }, { status: 400 });

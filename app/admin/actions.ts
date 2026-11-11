@@ -5,6 +5,8 @@ import { admin } from "../../lib/supabase-admin";
 import { requireAdmin, sessionClient } from "../../lib/supabase-server";
 import { sendCancellation, sendConfirmation } from "../../lib/mail";
 import { berlinToUtc } from "../../lib/tz";
+import { baseUrlFrom } from "../../lib/site";
+import { headers } from "next/headers";
 
 const s = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 const n = (f: FormData, k: string) => Number(f.get(k));
@@ -35,7 +37,7 @@ export async function setStatus(f: FormData) {
     .select("client_name,client_email,starts_at,ends_at,manage_token,services(name)")
     .single();
   if (data && status === "cancelled") {
-    await sendCancellation({ ...(data as any), service_name: (data as any).services.name }, false);
+    await sendCancellation({ ...(data as any), service_name: (data as any).services.name }, false, baseUrlFrom(await headers()));
   }
   revalidatePath("/admin");
 }
@@ -58,7 +60,7 @@ export async function createManualBooking(_: unknown, f: FormData) {
     .single();
   if (error) return { error: error.code === "23P01" ? "That time overlaps another booking." : "Could not save." };
   if (s(f, "email")) {
-    await sendConfirmation({ client_name: s(f, "name"), client_email: email, starts_at: start.toISOString(), ends_at: end.toISOString(), manage_token: data.manage_token, service_name: svc.name });
+    await sendConfirmation({ client_name: s(f, "name"), client_email: email, starts_at: start.toISOString(), ends_at: end.toISOString(), manage_token: data.manage_token, service_name: svc.name }, false, baseUrlFrom(await headers()));
   }
   revalidatePath("/admin");
   return { ok: true };

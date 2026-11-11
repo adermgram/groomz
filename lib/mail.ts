@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { fmtDateTime } from "./tz";
 
-const SITE = () => process.env.NEXT_PUBLIC_SITE_URL || "https://grooms.de";
+const DEFAULT_SITE = () => (process.env.NEXT_PUBLIC_SITE_URL || "https://grooms.de").replace(/\/$/, "");
 
 function transport() {
   const host = process.env.SMTP_HOST;
@@ -35,7 +35,7 @@ export type MailBooking = {
   service_name: string;
 };
 
-function ics(b: MailBooking) {
+function ics(b: MailBooking, site: string) {
   const f = (d: string) => new Date(d).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   return [
     "BEGIN:VCALENDAR",
@@ -49,13 +49,13 @@ function ics(b: MailBooking) {
     `DTEND:${f(b.ends_at)}`,
     `SUMMARY:GROOMS - ${b.service_name}`,
     "LOCATION:GROOMS, Berlin",
-    `URL:${SITE()}/booking/${b.manage_token}`,
+    `URL:${site}/booking/${b.manage_token}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
 }
 
-async function send(to: string, subject: string, html: string, attachIcs?: MailBooking) {
+async function send(to: string, subject: string, html: string, ical?: string) {
   const t = transport();
   if (!t) {
     console.warn("[mail] SMTP not configured, skipping:", subject, "->", to);
@@ -67,9 +67,7 @@ async function send(to: string, subject: string, html: string, attachIcs?: MailB
       to,
       subject,
       html,
-      attachments: attachIcs
-        ? [{ filename: "grooms-booking.ics", content: ics(attachIcs), contentType: "text/calendar" }]
-        : undefined,
+      attachments: ical ? [{ filename: "grooms-booking.ics", content: ical, contentType: "text/calendar" }] : undefined,
     });
   } catch (e) {
     console.error("[mail] failed", subject, e); // never let email failure break a booking
@@ -78,15 +76,16 @@ async function send(to: string, subject: string, html: string, attachIcs?: MailB
 
 const details = (b: MailBooking) =>
   `<p style="margin:0 0 6px"><b>${esc(b.service_name)}</b></p><p style="margin:0 0 16px">${esc(fmtDateTime(b.starts_at))} (Berlin time)</p>`;
-const manage = (b: MailBooking) =>
-  `<p><a href="${SITE()}/booking/${b.manage_token}" style="background:#d62b1a;color:#fff;padding:12px 20px;text-decoration:none;display:inline-block">Manage / cancel booking</a></p>`;
+const manage = (b: MailBooking, site: string) =>
+  `<p><a href="${site}/booking/${b.manage_token}" style="background:#d62b1a;color:#fff;padding:12px 20px;text-decoration:none;display:inline-block">Manage / cancel booking</a></p>`;
 
-export async function sendConfirmation(b: MailBooking, rescheduled = false) {
+/** `site` = public base URL (from the incoming request); falls back to NEXT_PUBLIC_SITE_URL. */
+export async function sendConfirmation(b: MailBooking, rescheduled = false, site = DEFAULT_SITE()) {
   await send(
     b.client_email,
     rescheduled ? "Your GROOMS booking was moved" : "Your GROOMS booking is confirmed",
-    wrap(rescheduled ? "Booking updated" : "You're booked", `<p>Hi ${esc(b.client_name)},</p>${details(b)}${manage(b)}`),
-    b,
+    wrap(rescheduled ? "Booking updated" : "You're booked", `<p>Hi ${esc(b.client_name)},</p>${details(b)}${manage(b, site)}`),
+    ics(b, site),
   );
   if (process.env.OWNER_EMAIL) {
     await send(
@@ -97,21 +96,21 @@ export async function sendConfirmation(b: MailBooking, rescheduled = false) {
   }
 }
 
-export async function sendCancellation(b: MailBooking, byClient: boolean) {
+export async function sendCancellation(b: MailBooking, byClient: boolean, site = DEFAULT_SITE()) {
   await send(
     b.client_email,
     "Your GROOMS booking was cancelled",
-    wrap("Booking cancelled", `<p>Hi ${esc(b.client_name)},</p>${details(b)}<p><a href="${SITE()}/book">Book a new time</a></p>`),
+    wrap("Booking cancelled", `<p>Hi ${esc(b.client_name)},</p>${details(b)}<p><a href="${site}/book">Book a new time</a></p>`),
   );
   if (byClient && process.env.OWNER_EMAIL) {
     await send(process.env.OWNER_EMAIL, `Cancelled: ${b.client_name}`, wrap("Cancelled by client", details(b)));
   }
 }
 
-export async function sendReminder(b: MailBooking) {
+export async function sendReminder(b: MailBooking, site = DEFAULT_SITE()) {
   await send(
     b.client_email,
     "Reminder: your GROOMS appointment is tomorrow",
-    wrap("See you soon", `<p>Hi ${esc(b.client_name)},</p>${details(b)}${manage(b)}`),
+    wrap("See you soon", `<p>Hi ${esc(b.client_name)},</p>${details(b)}${manage(b, site)}`),
   );
 }
