@@ -1,6 +1,11 @@
-/* ===================== GROOMS — app.js ===================== */
-(function () {
+/* eslint-disable */
+// @ts-nocheck
+/* GROOMS landing behaviour (ported from app.js). Call initLanding() after the markup is mounted; returns a dispose fn. */
+export const LANGS_LIST = null;
+export function initLanding() {
   'use strict';
+  var disposers = [];
+  var onDoc = function (type, fn) { document.addEventListener(type, fn); disposers.push(function () { document.removeEventListener(type, fn); }); };
 
   var LANGS = [
     { code: 'en', label: 'English' },
@@ -17,7 +22,7 @@
       heroKicker: 'Afro & textured-hair specialists',
       tagline: 'Know your hair. Own your look.',
       heroNote: 'Every photo on this page is a real client. No stock, no filters standing in for skill, just two years of work off the chair in Berlin.',
-      btnBook: 'Book via DM', scrollCue: 'Scroll, the sheet',
+      btnBook: 'Book now', scrollCue: 'Scroll, the sheet',
       s1Kicker: 'The contact sheet', s1TitleA: 'Real heads.', s1TitleB: 'Real work.',
       s1Lede: 'Twelve frames pulled from two years of the chair, every head a different growth pattern and texture, cut to what actually suits it. Hover any frame to develop it.',
       s2Kicker: 'Field notes', s2Title: 'Most barbers cut. We read the hair first.',
@@ -34,9 +39,9 @@
       svc2n: 'Lineups', svc2d: 'Sharp edges, held sharp.',
       svc3n: 'Beard Lineup & Grooming', svc3d: 'Shaped and conditioned, not just trimmed.',
       svc4n: 'Locs, Braids & Cornrows', svc4d: 'Textured-hair work, by barbers who actually specialize in it.',
-      svcNote: 'Pricing & online booking coming soon, for now, every spot is booked by DM.',
-      ctaKicker: 'The one way to book', ctaTitle: 'Send us a DM.',
-      ctaSub: 'Berlin-based. Message us on Instagram, tell us what you are after, and we will find you a chair.',
+      svcNote: 'Pick a service and book your chair online in under a minute.',
+      ctaKicker: 'Book a chair', ctaTitle: 'Pick your time.',
+      ctaSub: 'Berlin-based. Choose a service and a time that suits you. Prefer to chat first? Message us on Instagram.',
       hpKicker: "The Hair Profile, coming soon",
       hpTitle: "Your hair, remembered.",
       hpBody: "A digital Hair Profile that remembers your hair, its texture, your cuts, your routine, so any GROOMS barber picks up exactly where the last one left off. Consistent, personalised grooming wherever you go. Launching in Berlin first.",
@@ -62,7 +67,7 @@
       heroKicker: 'Spezialisten für Afro- & Naturhaar',
       tagline: 'Kenn dein Haar. Zeig deinen Look.',
       heroNote: 'Jedes Foto auf dieser Seite ist ein echter Kunde. Keine Stockfotos, keine Filter als Ersatz für Können, nur zwei Jahre Arbeit am Stuhl in Berlin.',
-      btnBook: 'Per DM buchen', scrollCue: 'Scrollen, der Bogen',
+      btnBook: 'Jetzt buchen', scrollCue: 'Scrollen, der Bogen',
       s1Kicker: 'Der Kontaktbogen', s1TitleA: 'Echte Köpfe.', s1TitleB: 'Echte Arbeit.',
       s1Lede: 'Zwölf Aufnahmen aus zwei Jahren am Stuhl, jeder Kopf ein anderes Wachstumsmuster und eine andere Textur, geschnitten auf das, was wirklich passt. Fahre über ein Bild, um es zu entwickeln.',
       s2Kicker: 'Notizen', s2Title: 'Andere schneiden nur. Wir lesen zuerst das Haar.',
@@ -79,9 +84,9 @@
       svc2n: 'Konturen', svc2d: 'Scharfe Kanten, scharf gehalten.',
       svc3n: 'Bartkontur & Pflege', svc3d: 'Geformt und gepflegt, nicht nur gestutzt.',
       svc4n: 'Locs, Zöpfe & Cornrows', svc4d: 'Naturhaar-Arbeit von Barbieren, die sich wirklich darauf spezialisiert haben.',
-      svcNote: 'Preise & Online-Buchung folgen bald, vorerst wird jeder Platz per DM gebucht.',
-      ctaKicker: 'Der eine Weg zu buchen', ctaTitle: 'Schreib uns eine DM.',
-      ctaSub: 'Mit Sitz in Berlin. Schreib uns auf Instagram, sag uns, was du willst, und wir finden dir einen Stuhl.',
+      svcNote: 'Wähle einen Service und buche deinen Stuhl online in unter einer Minute.',
+      ctaKicker: 'Stuhl buchen', ctaTitle: 'Wähle deine Zeit.',
+      ctaSub: 'Mit Sitz in Berlin. Wähle Service und Zeit, die zu dir passen. Lieber erst schreiben? Melde dich auf Instagram.',
       hpKicker: "Das Hair Profile, bald verfügbar",
       hpTitle: "Dein Haar, gespeichert.",
       hpBody: "Ein digitales Hair Profile, das sich dein Haar merkt, Textur, deine Schnitte, deine Routine, damit jeder GROOMS-Barbier genau dort weitermacht, wo der letzte aufgehört hat. Konsistentes, persönliches Grooming, wohin du auch gehst. Zuerst in Berlin.",
@@ -107,7 +112,7 @@
       heroKicker: 'Специалисты по афро и текстурным волосам',
       tagline: 'Знай свои волосы. Владей своим стилем.',
       heroNote: 'Каждое фото на этой странице, реальный клиент. Никаких стоков и фильтров вместо мастерства, только два года работы в кресле в Берлине.',
-      btnBook: 'Записаться в DM', scrollCue: 'Листай, контактный лист',
+      btnBook: 'Записаться', scrollCue: 'Листай, контактный лист',
       s1Kicker: 'Контактный лист', s1TitleA: 'Реальные люди.', s1TitleB: 'Реальная работа.',
       s1Lede: 'Двенадцать кадров из двух лет работы в кресле, каждая голова со своим ростом и текстурой, стрижка под то, что действительно идёт. Наведите на кадр, чтобы проявить его.',
       s2Kicker: 'Заметки', s2Title: 'Другие просто стригут. Мы сначала читаем волосы.',
@@ -124,9 +129,9 @@
       svc2n: 'Контуры', svc2d: 'Чёткие края, держатся чётко.',
       svc3n: 'Контур и уход за бородой', svc3d: 'Форма и уход, а не просто подравнивание.',
       svc4n: 'Локи, косы и корнроу', svc4d: 'Работа с текстурными волосами от барберов, которые на этом специализируются.',
-      svcNote: 'Цены и онлайн-запись скоро, пока каждое место бронируется через DM.',
-      ctaKicker: 'Единственный способ записаться', ctaTitle: 'Напишите нам в DM.',
-      ctaSub: 'Мы в Берлине. Напишите нам в Instagram, расскажите, что хотите, и мы найдём вам кресло.',
+      svcNote: 'Выберите услугу и запишитесь онлайн меньше чем за минуту.',
+      ctaKicker: 'Записаться', ctaTitle: 'Выберите время.',
+      ctaSub: 'Мы в Берлине. Выберите услугу и удобное время. Хотите сначала написать? Пишите нам в Instagram.',
       hpKicker: "Hair Profile, скоро",
       hpTitle: "Твои волосы, в памяти.",
       hpBody: "Цифровой Hair Profile, который помнит твои волосы, текстуру, твои стрижки, твой уход, чтобы любой барбер GROOMS продолжил ровно с того места, где закончил предыдущий. Стабильный, персональный груминг, где бы ты ни был. Старт, в Берлине.",
@@ -152,7 +157,7 @@
       heroKicker: 'Spécialistes du cheveu afro & texturé',
       tagline: 'Connais tes cheveux. Affirme ton style.',
       heroNote: "Chaque photo de cette page est un vrai client. Pas de banque d'images, pas de filtres à la place du savoir-faire, juste deux ans de travail au fauteuil à Berlin.",
-      btnBook: 'Réserver en DM', scrollCue: 'Défiler, la planche',
+      btnBook: 'Réserver', scrollCue: 'Défiler, la planche',
       s1Kicker: 'La planche contact', s1TitleA: 'Vraies têtes.', s1TitleB: 'Vrai travail.',
       s1Lede: 'Douze clichés tirés de deux ans au fauteuil, chaque tête un schéma de pousse et une texture différents, coupés selon ce qui va vraiment. Survolez une image pour la révéler.',
       s2Kicker: 'Notes de terrain', s2Title: "Les autres coupent. Nous lisons d'abord le cheveu.",
@@ -169,9 +174,9 @@
       svc2n: 'Contours', svc2d: 'Des lignes nettes, qui le restent.',
       svc3n: 'Contour & soin de barbe', svc3d: 'Façonnée et soignée, pas seulement taillée.',
       svc4n: 'Locs, tresses & cornrows', svc4d: 'Du travail sur cheveu texturé, par des barbiers qui en sont vraiment spécialistes.',
-      svcNote: "Tarifs & réservation en ligne bientôt, pour l'instant, chaque place se réserve en DM.",
-      ctaKicker: 'La seule façon de réserver', ctaTitle: 'Écris-nous en DM.',
-      ctaSub: "Basés à Berlin. Écris-nous sur Instagram, dis-nous ce que tu veux, et on te trouve un fauteuil.",
+      svcNote: 'Choisis un service et réserve ta place en ligne en moins d’une minute.',
+      ctaKicker: 'Réserver un fauteuil', ctaTitle: 'Choisis ton créneau.',
+      ctaSub: 'Basés à Berlin. Choisis un service et un horaire. Tu préfères discuter d’abord ? Écris-nous sur Instagram.',
       hpKicker: "Le Hair Profile, bientôt",
       hpTitle: "Tes cheveux, mémorisés.",
       hpBody: "Un Hair Profile numérique qui retient tes cheveux, leur texture, tes coupes, ta routine, pour que n'importe quel barbier GROOMS reprenne exactement là où le dernier s'est arrêté. Un grooming cohérent et personnalisé, où que tu ailles. D'abord à Berlin.",
@@ -197,7 +202,7 @@
       heroKicker: 'Especialistas en cabello afro y texturizado',
       tagline: 'Conoce tu cabello. Haz tuyo tu look.',
       heroNote: 'Cada foto de esta página es un cliente real. Sin bancos de imágenes ni filtros que sustituyan al oficio, solo dos años de trabajo en la silla en Berlín.',
-      btnBook: 'Reservar por DM', scrollCue: 'Desplaza, la hoja',
+      btnBook: 'Reservar', scrollCue: 'Desplaza, la hoja',
       s1Kicker: 'La hoja de contactos', s1TitleA: 'Cabezas reales.', s1TitleB: 'Trabajo real.',
       s1Lede: 'Doce tomas de dos años en la silla, cada cabeza con un patrón de crecimiento y textura distintos, cortada a lo que de verdad le va. Pasa el cursor sobre una toma para revelarla.',
       s2Kicker: 'Notas de campo', s2Title: 'Otros solo cortan. Nosotros leemos primero el cabello.',
@@ -214,9 +219,9 @@
       svc2n: 'Perfilados', svc2d: 'Bordes nítidos, nítidos de verdad.',
       svc3n: 'Perfilado y arreglo de barba', svc3d: 'Modelada y cuidada, no solo recortada.',
       svc4n: 'Locs, trenzas y cornrows', svc4d: 'Trabajo en cabello texturizado, por barberos que de verdad se especializan en ello.',
-      svcNote: 'Precios y reserva online muy pronto, por ahora, cada plaza se reserva por DM.',
-      ctaKicker: 'La única forma de reservar', ctaTitle: 'Escríbenos por DM.',
-      ctaSub: 'Con base en Berlín. Escríbenos en Instagram, dinos qué buscas y te encontramos una silla.',
+      svcNote: 'Elige un servicio y reserva tu silla online en menos de un minuto.',
+      ctaKicker: 'Reservar una silla', ctaTitle: 'Elige tu hora.',
+      ctaSub: 'Con base en Berlín. Elige servicio y horario. ¿Prefieres hablar antes? Escríbenos en Instagram.',
       hpKicker: "El Hair Profile, muy pronto",
       hpTitle: "Tu cabello, recordado.",
       hpBody: "Un Hair Profile digital que recuerda tu cabello, su textura, tus cortes, tu rutina, para que cualquier barbero GROOMS continúe justo donde lo dejó el anterior. Grooming consistente y personalizado, vayas donde vayas. Primero en Berlín.",
@@ -242,7 +247,7 @@
       heroKicker: 'Specialisti di capelli afro e ricci',
       tagline: 'Conosci i tuoi capelli. Fai tuo il tuo look.',
       heroNote: 'Ogni foto di questa pagina è un cliente vero. Niente stock, niente filtri al posto del mestiere, solo due anni di lavoro sulla sedia a Berlino.',
-      btnBook: 'Prenota via DM', scrollCue: 'Scorri, il provino',
+      btnBook: 'Prenota ora', scrollCue: 'Scorri, il provino',
       s1Kicker: 'Il foglio provino', s1TitleA: 'Teste vere.', s1TitleB: 'Lavoro vero.',
       s1Lede: 'Dodici scatti da due anni sulla sedia, ogni testa con una crescita e una texture diverse, tagliata su ciò che le sta davvero. Passa sopra uno scatto per svilupparlo.',
       s2Kicker: 'Appunti', s2Title: 'Gli altri tagliano. Noi prima leggiamo il capello.',
@@ -259,9 +264,9 @@
       svc2n: 'Contorni', svc2d: 'Bordi netti, tenuti netti.',
       svc3n: 'Contorno e cura della barba', svc3d: 'Modellata e curata, non solo spuntata.',
       svc4n: 'Locs, trecce e cornrows', svc4d: 'Lavoro su capelli ricci, da barbieri che ci sono davvero specializzati.',
-      svcNote: 'Prezzi e prenotazione online in arrivo, per ora ogni posto si prenota via DM.',
-      ctaKicker: "L'unico modo per prenotare", ctaTitle: 'Scrivici in DM.',
-      ctaSub: 'Con base a Berlino. Scrivici su Instagram, dicci cosa cerchi e ti troviamo una sedia.',
+      svcNote: 'Scegli un servizio e prenota la tua sedia online in meno di un minuto.',
+      ctaKicker: 'Prenota una sedia', ctaTitle: 'Scegli il tuo orario.',
+      ctaSub: 'Con base a Berlino. Scegli servizio e orario. Preferisci scriverci prima? Trovaci su Instagram.',
       hpKicker: "Hair Profile, in arrivo",
       hpTitle: "I tuoi capelli, ricordati.",
       hpBody: "Un Hair Profile digitale che ricorda i tuoi capelli, texture, i tuoi tagli, la tua routine, così ogni barbiere GROOMS riparte esattamente da dove ha finito il precedente. Grooming coerente e personalizzato, ovunque tu vada. Prima a Berlino.",
@@ -287,7 +292,7 @@
       heroKicker: 'Specialisten in afro- en getextureerd haar',
       tagline: 'Ken je haar. Draag je look.',
       heroNote: 'Elke foto op deze pagina is een echte klant. Geen stockbeelden, geen filters in plaats van vakmanschap, gewoon twee jaar werk op de stoel in Berlijn.',
-      btnBook: 'Boek via DM', scrollCue: 'Scroll, het vel',
+      btnBook: 'Boek nu', scrollCue: 'Scroll, het vel',
       s1Kicker: 'Het contactvel', s1TitleA: 'Echte koppen.', s1TitleB: 'Echt werk.',
       s1Lede: 'Twaalf opnames uit twee jaar op de stoel, elk hoofd een ander groeipatroon en textuur, geknipt naar wat echt past. Beweeg over een opname om hem te ontwikkelen.',
       s2Kicker: 'Veldnotities', s2Title: 'Anderen knippen. Wij lezen eerst het haar.',
@@ -304,9 +309,9 @@
       svc2n: 'Lijnen', svc2d: 'Scherpe randen, scherp gehouden.',
       svc3n: 'Baardlijn & verzorging', svc3d: 'Gevormd en verzorgd, niet alleen bijgeknipt.',
       svc4n: 'Locs, vlechten & cornrows', svc4d: 'Werk met getextureerd haar, door barbiers die er echt in gespecialiseerd zijn.',
-      svcNote: 'Prijzen & online boeken binnenkort, voorlopig boek je elke plek via DM.',
-      ctaKicker: 'De enige manier om te boeken', ctaTitle: 'Stuur ons een DM.',
-      ctaSub: 'Gevestigd in Berlijn. Stuur ons een bericht op Instagram, vertel wat je zoekt en we vinden je een stoel.',
+      svcNote: 'Kies een service en boek je stoel online in minder dan een minuut.',
+      ctaKicker: 'Boek een stoel', ctaTitle: 'Kies je tijd.',
+      ctaSub: 'Gevestigd in Berlijn. Kies een service en tijd. Liever eerst chatten? Stuur ons een bericht op Instagram.',
       hpKicker: "Het Hair Profile, binnenkort",
       hpTitle: "Jouw haar, onthouden.",
       hpBody: "Een digitaal Hair Profile dat jouw haar onthoudt, textuur, je coupes, je routine, zodat elke GROOMS-barbier verdergaat precies waar de vorige stopte. Consistente, persoonlijke grooming, waar je ook gaat. Eerst in Berlijn.",
@@ -335,6 +340,8 @@
 
   // Always start fresh in light mode + English on every open; the user can switch during the session.
   var state = { theme: 'light', lang: 'en', langOpen: false };
+  try { var sl = localStorage.getItem('grooms-lang'); if (sl && DICT[sl]) state.lang = sl; var st = localStorage.getItem('grooms-theme'); if (st === 'dark' || st === 'light') state.theme = st; } catch (e) {}
+  try { var sl = localStorage.getItem('grooms-lang'); if (sl && DICT[sl]) state.lang = sl; var st = localStorage.getItem('grooms-theme'); if (st === 'dark' || st === 'light') state.theme = st; } catch (e) {}
 
   /* ---------- i18n ---------- */
   function applyLang(lang) {
@@ -422,8 +429,14 @@
     e.preventDefault();
     var form = e.currentTarget;
     if (form.checkValidity && !form.checkValidity()) { form.reportValidity && form.reportValidity(); return; }
-    $('[data-waitlist-form]').hidden = true;
-    $('[data-waitlist-success]').hidden = false;
+    var payload = { full_name: form.elements.fullname.value, location: form.elements.location.value, email: form.elements.email.value };
+    if (form.dataset.busy) return; // ignore duplicate submit events (double-click / double-bound handler)
+    form.dataset.busy = '1';
+    var btn = form.querySelector('button[type=submit]'); if (btn) btn.disabled = true;
+    fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      .then(function (r) { if (!r.ok) throw new Error('fail'); $('[data-waitlist-form]').hidden = true; $('[data-waitlist-success]').hidden = false; })
+      .catch(function () { alert('Something went wrong. Please try again.'); })
+      .then(function () { if (btn) btn.disabled = false; delete form.dataset.busy; });
   }
 
   /* ---------- Scroll reveal ---------- */
@@ -445,7 +458,7 @@
 
   /* ---------- Hero video crossfade ---------- */
   function initHeroVideo() {
-    var SRCS = ['assets/bg-1.mp4','assets/bg-2.mp4','assets/bg-3.mp4','assets/bg-4.mp4','assets/bg-5.mp4','assets/bg-6.mp4','assets/bg-7.mp4','assets/bg-8.mp4'];
+    var SRCS = ['/assets/bg-1.mp4','/assets/bg-2.mp4','/assets/bg-3.mp4','/assets/bg-4.mp4','/assets/bg-5.mp4','/assets/bg-6.mp4','/assets/bg-7.mp4','/assets/bg-8.mp4'];
     var FADE = 0.9; // seconds, matches CSS opacity transition
     var KEY = 'grooms_bg_video';
     var a = document.getElementById('heroVidA');
@@ -520,8 +533,9 @@
     else active.addEventListener('loadeddata', fadePosterOut, { once: true });
 
     var onHide = function () { save(); };
-    document.addEventListener('visibilitychange', onHide);
+    onDoc('visibilitychange', onHide);
     window.addEventListener('pagehide', onHide);
+    disposers.push(function () { window.removeEventListener('pagehide', onHide); try { a.pause(); b.pause(); } catch (e) {} });
   }
 
   /* ---------- Boot ---------- */
@@ -532,7 +546,6 @@
     buildLangMenu(menu, btn);
     applyLang(state.lang);
 
-    try { document.title = 'GROOMS | Afro & Textured-Hair Barbershop in Berlin'; } catch (e) {}
 
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -540,21 +553,22 @@
     });
     $('[data-theme-toggle]').addEventListener('click', toggleTheme);
 
-    document.addEventListener('click', function (e) {
+    onDoc('click', function (e) {
       if (state.langOpen && !(e.target.closest && e.target.closest('[data-langwrap]'))) closeLang();
     });
 
     $$('[data-open-waitlist]').forEach(function (el) { el.addEventListener('click', openWaitlist); });
     $$('[data-close-waitlist]').forEach(function (el) { el.addEventListener('click', closeWaitlist); });
     $('[data-waitlist-submit]').addEventListener('submit', submitWaitlist);
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !$('[data-waitlist]').hidden) closeWaitlist();
+    onDoc('keydown', function (e) {
+      var w = $('[data-waitlist]');
+      if (e.key === 'Escape' && w && !w.hidden) closeWaitlist();
     });
 
     initReveal();
     initHeroVideo();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
-})();
+  init();
+  return function dispose() { disposers.forEach(function (d) { d(); }); document.body.style.overflow = ''; };
+}

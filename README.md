@@ -1,44 +1,31 @@
-# GROOMS — Landing Page
+# GROOMS
 
-Static implementation of the GROOMS landing page (Berlin afro & textured-hair barbershop).
+Next.js (App Router) + Supabase + Vercel. Landing page, online booking and an admin dashboard for GROOMS, Berlin.
 
-## Stack
+## Routes
+| Route | What |
+|---|---|
+| `/` | Landing page (7 languages, light/dark), ported from the original static site |
+| `/book` | Mobile-first booking: service, day, time, details |
+| `/booking/[token]` | Client's private link to view, reschedule or cancel |
+| `/admin` | Bookings (today, upcoming, manual add, mark done/no-show/cancel) |
+| `/admin/services`, `/admin/hours`, `/admin/clients` | Services CRUD, opening hours/time off/rules, clients and waitlist (CSV) |
 
-Plain HTML + CSS + vanilla JavaScript. **No build step, no dependencies, no server runtime** —
-it's a static site, ready to drop onto Hostinger shared hosting (or any static host).
+## Setup
+1. Create a Supabase project. In the SQL editor run `supabase/migrations/0001_init.sql` (tables, RLS, no-double-booking constraint, sample services and hours).
+2. Run `supabase/migrations/0002_admins.sql` too.
+3. Supabase, Authentication, Users: create the login (email + password, auto-confirm). Then Table Editor, `admins`: add a row with that email (lowercase). To remove someone's access, delete the row.
+4. Copy `.env.example` to `.env.local` and fill it in (`ADMIN_EMAILS` is just an optional fallback).
+4. `npm install`, then `npm run dev`.
 
-## Files
-
-- `index.html` — page markup (semantic, SEO meta, Open Graph, JSON-LD schema)
-- `styles.css` — all styling, light/dark theme variables, responsive rules
-- `app.js` — interactivity:
-  - 7-language switcher (EN, DE, RU, FR, ES, IT, NL)
-  - light/dark theme toggle
-  - hero background-video crossfade (8 clips, with poster fallback)
-  - scroll-reveal animations
-  - Hair Profile "early access" waitlist modal
-- `assets/` — logo, favicon, OG image, 12 contact-sheet frames, 8 hero videos, app preview
-- `404.html`, `robots.txt`, `sitemap.xml`, `llms.txt` — SEO / crawler files
-
-## Run locally
-
-Any static server works, e.g.:
-
-```bash
-python3 -m http.server 8099
-# then open http://localhost:8099/
-```
+## Email (Nodemailer)
+Uses plain SMTP, so any mailbox works (Hostinger, Gmail app password, ...). Set `SMTP_*`, `MAIL_FROM`, `OWNER_EMAIL`. Add SPF/DKIM for your sending domain so mails don't land in spam. Without `SMTP_HOST` emails are skipped and bookings still work.
+Reminders are sent by a daily Vercel Cron (`vercel.json`) calling `/api/cron/reminders`; set `CRON_SECRET` in Vercel.
 
 ## Deploy
+Push to GitHub, import into Vercel, add the env vars from `.env.example`, then point `grooms.de` DNS at Vercel.
 
-Upload the entire folder's contents to the web root (`public_html/` on Hostinger).
-No configuration required.
-
-## Note on the waitlist form
-
-The Hair Profile waitlist form is currently **front-end only** — on submit it shows the
-success state but does not yet send the data anywhere (this mirrors the design prototype).
-To capture real sign-ups, wire the form's submit to an email service or form endpoint
-(e.g. a Formspree/Hostinger mail handler) in `app.js` → `submitWaitlist()`.
-
-Booking remains via Instagram DM (@groomz.men), per the signed landing-page scope.
+## Notes
+- All times are Europe/Berlin. Slots come from opening hours, breaks, time off, service duration and existing bookings (`lib/slots.ts`). The database rejects overlapping confirmed bookings, so two people cannot take the same slot.
+- Public tables are locked by RLS; bookings/waitlist/admin writes only happen server-side with the service role key.
+- Landing markup lives in `content/landing.html`, behaviour and translations in `lib/landing.ts`.

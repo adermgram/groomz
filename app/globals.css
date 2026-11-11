@@ -342,6 +342,8 @@ img { display: block; }
 .sprockets-top { top: 0; }
 .sprockets-bottom { bottom: 0; }
 .frame-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+@media (max-width: 900px) { .frame-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .frame-grid { grid-template-columns: repeat(2, 1fr); } }
 .frame {
   position: relative;
   aspect-ratio: 4 / 5;
@@ -696,3 +698,7 @@ img { display: block; }
   }
   [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* ===================== Added: Next.js port ===================== */
+.cta-dm { display: inline-block; margin-top: 1.2rem; font-family: 'Fragment Mono', monospace; font-size: .85rem; letter-spacing: .08em; color: var(--ink-2); }
+.nf { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; gap: 1.5rem; padding: clamp(1.5rem, 5vw, 4rem); max-width: 44rem; margin: 0 auto; position: relative; z-index: 1; }

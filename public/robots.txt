@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /booking/
+Disallow: /api/
 
-# No crawl traps; this is a single-page site.
 Sitemap: https://grooms.de/sitemap.xml
