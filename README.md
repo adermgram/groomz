@@ -23,7 +23,7 @@ Uses plain SMTP, so any mailbox works (Hostinger, Gmail app password, ...). Set 
 Reminders are sent by a daily Vercel Cron (`vercel.json`) calling `/api/cron/reminders`; set `CRON_SECRET` in Vercel.
 
 ## Deploy
-Push to GitHub, import into Vercel, add the env vars from `.env.example`, then point `grooms.de` DNS at Vercel.
+Push to GitHub, import into Vercel, add the env vars from `.env.example`, then point `groomzmen.de` DNS at Vercel.
 
 ## Notes
 - All times are Europe/Berlin. Slots come from opening hours, breaks, time off, service duration and existing bookings (`lib/slots.ts`). The database rejects overlapping confirmed bookings, so two people cannot take the same slot.

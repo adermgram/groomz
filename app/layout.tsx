@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./app.css";
 
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "https://grooms.de").replace(/\/+$/, "");
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "https://groomzmen.de").replace(/\/+$/, "");
 const TITLE = "GROOMS | Afro & Textured-Hair Barbershop in Berlin";
 const DESC =
   "GROOMS is a Berlin barbershop specialising in afro and textured hair: fades, lineups, braids, locs and cornrows, backed by real hair-care knowledge. Book online.";

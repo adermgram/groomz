@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /booking/
 Disallow: /api/
 
-Sitemap: https://grooms.de/sitemap.xml
+Sitemap: https://groomzmen.de/sitemap.xml

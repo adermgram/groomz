@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { fmtDateTime } from "./tz";
 
-const DEFAULT_SITE = () => (process.env.NEXT_PUBLIC_SITE_URL || "https://grooms.de").replace(/\/$/, "");
+const DEFAULT_SITE = () => (process.env.NEXT_PUBLIC_SITE_URL || "https://groomzmen.de").replace(/\/$/, "");
 
 function transport() {
   const host = process.env.SMTP_HOST;
@@ -43,7 +43,7 @@ function ics(b: MailBooking, site: string) {
     "PRODID:-//GROOMS//Booking//EN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
-    `UID:${b.manage_token}@grooms.de`,
+    `UID:${b.manage_token}@groomzmen.de`,
     `DTSTAMP:${f(new Date().toISOString())}`,
     `DTSTART:${f(b.starts_at)}`,
     `DTEND:${f(b.ends_at)}`,

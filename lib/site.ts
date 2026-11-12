@@ -1,4 +1,4 @@
-const FALLBACK = () => process.env.NEXT_PUBLIC_SITE_URL || "https://grooms.de";
+const FALLBACK = () => process.env.NEXT_PUBLIC_SITE_URL || "https://groomzmen.de";
 
 /**
  * Public base URL for links in emails. Uses the host the request really came in on,
