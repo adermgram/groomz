@@ -37,6 +37,10 @@
 .bk-slot { padding: .85rem .5rem; background: transparent; border: 1.5px solid var(--line); color: var(--ink); font-family: 'Fragment Mono', monospace; font-size: .9rem; cursor: pointer; }
 .bk-slot:hover { border-color: var(--accent); }
 .bk-slot.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.bk-top-ctl { display: flex; align-items: center; gap: .5rem; }
+.lang-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--bg-3); }
+.lang-seg button { background: transparent; border: 0; color: var(--ink-2); font-family: 'Fragment Mono', monospace; font-size: .72rem; letter-spacing: .08em; padding: .5rem .8rem; cursor: pointer; min-height: 2.2rem; }
+.lang-seg button.on { background: var(--accent); color: var(--on-accent); }
 /* Touch devices can't hover, so show the contact-sheet photos in full colour. */
 @media (hover: none) { .frame img { filter: grayscale(0) brightness(.96) contrast(1.02); } }
 .hero-kicker { text-shadow: 0 1px 10px rgba(0, 0, 0, .65); }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ManageKicker } from "../../../components/BookText";
 import BookingBar from "../../../components/BookingBar";
 import ManageBooking from "../../../components/ManageBooking";
 
@@ -9,7 +10,7 @@ export default async function Page({ params }: { params: Promise<{ token: string
   return (
     <main className="bk-page">
       <BookingBar />
-      <span className="kicker">Your booking</span>
+      <ManageKicker />
       <ManageBooking token={token} />
     </main>
   );

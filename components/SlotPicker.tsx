@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useT } from "../lib/booking-i18n";
 
 type Slot = { time: string; iso: string };
 
@@ -10,8 +11,6 @@ function addDays(d: string, n: number) {
   const [y, m, day] = d.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, day + n)).toISOString().slice(0, 10);
 }
-const longDay = (d: string) =>
-  new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 
 export default function SlotPicker({
   serviceId,
@@ -26,12 +25,16 @@ export default function SlotPicker({
   value: string | null;
   onPick: (iso: string) => void;
 }) {
+  const { t, loc } = useT();
   const start = useMemo(todayBerlin, []);
   const list = useMemo(() => Array.from({ length: days }, (_, i) => addDays(start, i)), [start, days]);
   const [date, setDate] = useState(start);
   const [slots, setSlots] = useState<Slot[] | null>(null);
   const [touched, setTouched] = useState(false); // user picked a day manually
   const strip = useRef<HTMLDivElement>(null);
+
+  const longDay = (d: string) =>
+    new Date(d + "T12:00:00Z").toLocaleDateString(loc, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 
   const url = (d: string) => {
     const q = new URLSearchParams({ service: serviceId, date: d });
@@ -84,7 +87,7 @@ export default function SlotPicker({
 
   return (
     <div className="bk-picker">
-      <div className="bk-days" ref={strip} role="group" aria-label="Choose a day">
+      <div className="bk-days" ref={strip} role="group" aria-label={t.chooseDay}>
         {list.map((d) => {
           const dt = new Date(d + "T12:00:00Z");
           return (
@@ -99,24 +102,24 @@ export default function SlotPicker({
                 setDate(d);
               }}
             >
-              <span>{dt.toLocaleDateString("en-GB", { weekday: "short", timeZone: "UTC" })}</span>
+              <span>{dt.toLocaleDateString(loc, { weekday: "short", timeZone: "UTC" })}</span>
               <b>{dt.getUTCDate()}</b>
-              <span>{dt.toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" })}</span>
+              <span>{dt.toLocaleDateString(loc, { month: "short", timeZone: "UTC" })}</span>
             </button>
           );
         })}
       </div>
       <p className="bk-dayhead">{longDay(date)}</p>
       <div className="bk-slots" aria-live="polite">
-        {slots === null && <p className="bk-muted">Finding free times…</p>}
-        {slots && slots.length === 0 && <p className="bk-muted">No free times on this day. Try another date.</p>}
+        {slots === null && <p className="bk-muted">{t.finding}</p>}
+        {slots && slots.length === 0 && <p className="bk-muted">{t.noTimes}</p>}
         {slots?.map((s) => (
           <button key={s.iso} type="button" aria-pressed={value === s.iso} className={"bk-slot" + (value === s.iso ? " on" : "")} onClick={() => onPick(s.iso)}>
             {s.time}
           </button>
         ))}
       </div>
-      <p className="bk-muted bk-tz">All times are Berlin time.</p>
+      <p className="bk-muted bk-tz">{t.allBerlin}</p>
     </div>
   );
 }

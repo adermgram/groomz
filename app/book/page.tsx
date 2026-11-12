@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BookHeading, BookHelp } from "../../components/BookText";
 import BookingBar from "../../components/BookingBar";
 import BookingFlow from "../../components/BookingFlow";
 import { admin } from "../../lib/supabase-admin";
@@ -19,12 +20,9 @@ export default async function BookPage() {
   return (
     <main className="bk-page">
       <BookingBar />
-      <span className="kicker">Book a chair</span>
-      <h1 className="h2">Pick your time.</h1>
+      <BookHeading />
       <BookingFlow services={data ?? []} />
-      <p className="bk-muted bk-help">
-        Questions first? <a href="https://www.instagram.com/groomz.men/" target="_blank" rel="noopener">Message us on Instagram</a>.
-      </p>
+      <BookHelp />
     </main>
   );
 }

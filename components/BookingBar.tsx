@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LangToggle from "./LangToggle";
 import ThemeToggle from "./ThemeToggle";
 
 export default function BookingBar() {
@@ -8,7 +9,10 @@ export default function BookingBar() {
         <img src="/assets/logo.jpg" alt="" className="brand-logo" />
         <span>GROOMS</span>
       </Link>
-      <ThemeToggle />
+      <div className="bk-top-ctl">
+        <LangToggle />
+        <ThemeToggle />
+      </div>
     </div>
   );
 }
