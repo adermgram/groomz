@@ -8,7 +8,6 @@ const items = [
   ["/admin/services", "Services"],
   ["/admin/hours", "Hours"],
   ["/admin/clients", "Clients"],
-  ["/admin/profile", "Profile"],
 ] as const;
 
 export default function AdminNav() {

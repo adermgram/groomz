@@ -6,7 +6,9 @@ import { addDays, berlinDateStr, berlinToUtc } from "../../../lib/tz";
 
 export const dynamic = "force-dynamic";
 
-export default async function Bookings() {
+export default async function Bookings({ searchParams }: { searchParams: Promise<{ new?: string }> }) {
+  const sp = await searchParams;
+  const newDate = /^\d{4}-\d{2}-\d{2}$/.test(sp.new ?? "") ? sp.new : undefined; // from the calendar's "+" button
   const db = admin();
   const today = berlinDateStr(new Date());
   const dayStart = berlinToUtc(today, 0).toISOString();
@@ -34,8 +36,8 @@ export default async function Bookings() {
       <h2 className="ad-h">Today</h2>
       {todays.length ? todays.map((b) => <BookingCard key={b.id} b={b} locs={locs} />) : <p className="ad-sub">Nothing booked today.</p>}
 
-      <h2 className="ad-h">Add booking</h2>
-      <ManualBooking services={svc.data ?? []} />
+      <h2 className="ad-h" id="add">Add booking</h2>
+      <ManualBooking services={svc.data ?? []} defaultDate={newDate} />
 
       <h2 className="ad-h">Upcoming</h2>
       {rows(up.data).map((b) => <BookingCard key={b.id} b={b} locs={locs} />)}
