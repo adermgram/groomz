@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { admin } from "../../lib/supabase-admin";
 import { requireAdmin, sessionClient } from "../../lib/supabase-server";
 import { sendCancellation, sendConfirmation } from "../../lib/mail";
-import { berlinToUtc } from "../../lib/tz";
+import { allLocations, getLocationForDate } from "../../lib/locations";
+import { berlinDateStr, berlinToUtc } from "../../lib/tz";
 import { baseUrlFrom } from "../../lib/site";
 import { headers } from "next/headers";
 
@@ -34,10 +35,13 @@ export async function setStatus(f: FormData) {
     .from("bookings")
     .update({ status })
     .eq("id", id)
-    .select("client_name,client_email,starts_at,ends_at,manage_token,services(name)")
+    .select("*, services(name)")
     .single();
   if (data && status === "cancelled") {
-    await sendCancellation({ ...(data as any), service_name: (data as any).services.name }, false, baseUrlFrom(await headers()));
+    const b = data as any;
+    const locs = await allLocations();
+    const location = locs.find((l) => l.id === b.location_id) ?? (await getLocationForDate(berlinDateStr(new Date(b.starts_at))));
+    await sendCancellation({ ...b, service_name: b.services.name, location }, false, baseUrlFrom(await headers()));
   }
   revalidatePath("/admin");
 }
@@ -53,14 +57,23 @@ export async function createManualBooking(_: unknown, f: FormData) {
   const start = berlinToUtc(date, Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5)));
   const end = new Date(start.getTime() + svc.duration_min * 60_000);
   const email = s(f, "email") || "walk-in@grooms.local";
+  const location = await getLocationForDate(date);
   const { data, error } = await db
     .from("bookings")
-    .insert({ service_id, starts_at: start.toISOString(), ends_at: end.toISOString(), client_name: s(f, "name"), client_email: email, client_phone: s(f, "phone") || null })
+    .insert({
+      service_id,
+      starts_at: start.toISOString(),
+      ends_at: end.toISOString(),
+      client_name: s(f, "name"),
+      client_email: email,
+      client_phone: s(f, "phone") || null,
+      location_id: location?.id ?? null,
+    })
     .select("manage_token")
     .single();
   if (error) return { error: error.code === "23P01" ? "That time overlaps another booking." : "Could not save." };
   if (s(f, "email")) {
-    await sendConfirmation({ client_name: s(f, "name"), client_email: email, starts_at: start.toISOString(), ends_at: end.toISOString(), manage_token: data.manage_token, service_name: svc.name }, false, baseUrlFrom(await headers()));
+    await sendConfirmation({ client_name: s(f, "name"), client_email: email, starts_at: start.toISOString(), ends_at: end.toISOString(), manage_token: data.manage_token, service_name: svc.name, location }, false, baseUrlFrom(await headers()));
   }
   revalidatePath("/admin");
   return { ok: true };
@@ -97,6 +110,7 @@ export async function saveHours(f: FormData) {
   await requireAdmin();
   const db = admin();
   for (let d = 0; d < 7; d++) {
+    const loc = s(f, `loc_${d}`);
     await db.from("working_hours").upsert({
       weekday: d,
       is_open: f.get(`open_${d}`) === "on",
@@ -104,6 +118,7 @@ export async function saveHours(f: FormData) {
       close_time: s(f, `to_${d}`) || "19:00",
       break_start: s(f, `bs_${d}`) || null,
       break_end: s(f, `be_${d}`) || null,
+      ...(loc ? { location_id: loc } : {}),
     });
   }
   await db.from("settings").update({
@@ -128,4 +143,52 @@ export async function deleteTimeOff(f: FormData) {
   await requireAdmin();
   await admin().from("time_off").delete().eq("id", s(f, "id"));
   revalidatePath("/admin/hours");
+}
+
+/** One-off swap: use another location on a single date. */
+export async function addLocationOverride(f: FormData) {
+  await requireAdmin();
+  const date = s(f, "date");
+  const location_id = s(f, "location_id");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !location_id) return;
+  await admin().from("location_overrides").upsert({ date, location_id });
+  revalidatePath("/admin/hours");
+  revalidatePath("/admin/calendar");
+}
+
+export async function deleteLocationOverride(f: FormData) {
+  await requireAdmin();
+  await admin().from("location_overrides").delete().eq("date", s(f, "date"));
+  revalidatePath("/admin/hours");
+  revalidatePath("/admin/calendar");
+}
+
+export async function saveLocation(f: FormData) {
+  await requireAdmin();
+  const row = {
+    name: s(f, "name"),
+    address: s(f, "address"),
+    postcode_city: s(f, "postcode_city"),
+    maps_url: /^https?:\/\//.test(s(f, "maps_url")) ? s(f, "maps_url") : null,
+  };
+  if (!row.name || !row.address || !row.postcode_city) return;
+  await admin().from("locations").update(row).eq("id", s(f, "id"));
+  revalidatePath("/admin/hours");
+}
+
+/** Change the signed-in admin's password (verifies the current one first). */
+export async function changePassword(_: unknown, f: FormData) {
+  const email = await requireAdmin();
+  const current = String(f.get("current") ?? "");
+  const next = String(f.get("next") ?? "");
+  const again = String(f.get("again") ?? "");
+  if (next.length < 10) return { error: "New password must be at least 10 characters." };
+  if (next !== again) return { error: "The two new passwords don't match." };
+  if (next === current) return { error: "Choose a password different from the current one." };
+  const sb = await sessionClient();
+  const check = await sb.auth.signInWithPassword({ email, password: current });
+  if (check.error) return { error: "Current password is wrong." };
+  const { error } = await sb.auth.updateUser({ password: next });
+  if (error) return { error: error.message || "Could not change the password." };
+  return { ok: true };
 }

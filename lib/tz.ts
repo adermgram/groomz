@@ -51,4 +51,10 @@ export function fmtDateTime(at: Date | string, lang = "en"): string {
   }).format(new Date(at));
 }
 
-export const toMin = (t: string | null): number | null => (t ? Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5)) : null);
+/** Minutes since midnight (Berlin time) of an instant. */
+export function berlinMinutes(at: Date): number {
+  const p = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, hourCycle: "h23", hour: "2-digit", minute: "2-digit" }).formatToParts(at);
+  return Number(p.find((x) => x.type === "hour")!.value) * 60 + Number(p.find((x) => x.type === "minute")!.value);
+}
+
+export const toMin =(t: string | null): number | null => (t ? Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5)) : null);

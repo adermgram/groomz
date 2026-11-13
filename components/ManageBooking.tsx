@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { fill, useT } from "../lib/booking-i18n";
+import type { Location } from "../lib/locations-shared";
+import LocationBlock from "./LocationBlock";
 import SlotPicker from "./SlotPicker";
 
-type B = { id: string; service_id: string; service_name: string; starts_at: string; status: string; client_name: string; canChange: boolean; cutoff: number };
+type B = { location: Location | null; id: string; service_id: string; service_name: string; starts_at: string; status: string; client_name: string; canChange: boolean; cutoff: number };
 
 export default function ManageBooking({ token }: { token: string }) {
   const { t, loc } = useT();
@@ -40,6 +42,7 @@ export default function ManageBooking({ token }: { token: string }) {
     <div className="bk">
       <h1 className="h2">{b.status === "cancelled" ? t.cancelled : fill(t.hi, { name: b.client_name.split(" ")[0] })}</h1>
       <p><b>{b.service_name}</b><br />{fmt(b.starts_at)} {t.berlinTime}<br /><span className="bk-muted">{fill(t.status, { status: t.statuses[b.status] ?? b.status })}</span></p>
+      <LocationBlock location={b.location} />
       {msg && <p className="bk-ok" role="status">{msg}</p>}
 
       {b.status === "confirmed" && mode === "view" && (

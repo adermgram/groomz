@@ -1,22 +1,35 @@
+import { getLocationForDate, type Location } from "./locations";
 import { admin } from "./supabase-admin";
 import { addDays, berlinDateStr, berlinToUtc, toMin, weekdayOf } from "./tz";
 
 export type Slot = { time: string; iso: string };
 
-/** Free start times (Berlin local "HH:MM") for a service on a date. */
-export async function getSlots(serviceId: string, date: string, ignoreBookingId?: string): Promise<Slot[]> {
+/**
+ * Free start times (Berlin local "HH:MM") for a service on a date, plus the location
+ * that day belongs to. If `onlyLocationSlug` is set and the day is at another location,
+ * no slots are returned.
+ */
+export async function getSlots(
+  serviceId: string,
+  date: string,
+  ignoreBookingId?: string,
+  onlyLocationSlug?: string,
+): Promise<{ slots: Slot[]; location: Location | null }> {
   const db = admin();
-  const [{ data: svc }, { data: s }, { data: wh }, { data: off }] = await Promise.all([
+  const [{ data: svc }, { data: s }, { data: wh }, { data: off }, location] = await Promise.all([
     db.from("services").select("duration_min").eq("id", serviceId).eq("active", true).maybeSingle(),
     db.from("settings").select("*").eq("id", 1).single(),
     db.from("working_hours").select("*").eq("weekday", weekdayOf(date)).maybeSingle(),
     db.from("time_off").select("id").lte("start_date", date).gte("end_date", date),
+    getLocationForDate(date),
   ]);
-  if (!svc || !s || !wh || !wh.is_open || (off && off.length)) return [];
+  const none = { slots: [] as Slot[], location };
+  if (!svc || !s || !wh || !wh.is_open || (off && off.length)) return none;
+  if (onlyLocationSlug && location?.slug !== onlyLocationSlug) return none;
 
   const now = new Date();
   const earliest = new Date(now.getTime() + s.min_notice_hours * 3600_000);
-  if (date > addDays(berlinDateStr(now), s.max_days_ahead)) return [];
+  if (date > addDays(berlinDateStr(now), s.max_days_ahead)) return none;
 
   const open = toMin(wh.open_time)!;
   const close = toMin(wh.close_time)!;
@@ -48,5 +61,5 @@ export async function getSlots(serviceId: string, date: string, ignoreBookingId?
       iso: start.toISOString(),
     });
   }
-  return out;
+  return { slots: out, location };
 }

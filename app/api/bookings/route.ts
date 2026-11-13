@@ -20,7 +20,8 @@ export async function POST(req: Request) {
   }
 
   // Re-validate against computed slots so clients can't book outside opening hours.
-  const slots = await getSlots(service_id, berlinDateStr(start));
+  // The location is always derived here from the date, never taken from the client.
+  const { slots, location } = await getSlots(service_id, berlinDateStr(start));
   if (!slots.some((s) => s.iso === start.toISOString())) {
     return NextResponse.json({ error: "slot_unavailable" }, { status: 409 });
   }
@@ -32,7 +33,16 @@ export async function POST(req: Request) {
 
   const { data, error } = await db
     .from("bookings")
-    .insert({ service_id, starts_at: start.toISOString(), ends_at: end.toISOString(), client_name, client_email, client_phone, notes })
+    .insert({
+      service_id,
+      starts_at: start.toISOString(),
+      ends_at: end.toISOString(),
+      client_name,
+      client_email,
+      client_phone,
+      notes,
+      location_id: location?.id ?? null,
+    })
     .select("manage_token")
     .single();
 
@@ -41,13 +51,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.code === "23P01" ? "slot_unavailable" : "db" }, { status: error.code === "23P01" ? 409 : 500 });
   }
 
-  await sendConfirmation({
-    client_name,
-    client_email,
-    starts_at: start.toISOString(),
-    ends_at: end.toISOString(),
-    manage_token: data.manage_token,
-    service_name: svc.name,
-  }, false, baseUrlFrom(req.headers));
-  return NextResponse.json({ ok: true, token: data.manage_token });
+  await sendConfirmation(
+    {
+      client_name,
+      client_email,
+      starts_at: start.toISOString(),
+      ends_at: end.toISOString(),
+      manage_token: data.manage_token,
+      service_name: svc.name,
+      location,
+    },
+    false,
+    baseUrlFrom(req.headers),
+  );
+  return NextResponse.json({ ok: true, token: data.manage_token, location });
 }

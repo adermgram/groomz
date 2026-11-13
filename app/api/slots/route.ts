@@ -8,9 +8,10 @@ export async function GET(req: Request) {
   const service = u.searchParams.get("service") || "";
   const date = u.searchParams.get("date") || "";
   const ignore = u.searchParams.get("ignore") || undefined;
-  if (!/^[0-9a-f-]{36}$/.test(service) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  const location = u.searchParams.get("location") || undefined;
+  if (!/^[0-9a-f-]{36}$/.test(service) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || (location && !/^[a-z0-9-]{1,40}$/.test(location))) {
     return NextResponse.json({ error: "bad request" }, { status: 400 });
   }
-  const slots = await getSlots(service, date, ignore && /^[0-9a-f-]{36}$/.test(ignore) ? ignore : undefined);
-  return NextResponse.json({ slots });
+  const { slots, location: loc } = await getSlots(service, date, ignore && /^[0-9a-f-]{36}$/.test(ignore) ? ignore : undefined, location);
+  return NextResponse.json({ slots, location: loc });
 }

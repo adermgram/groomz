@@ -4,9 +4,11 @@ import { usePathname } from "next/navigation";
 
 const items = [
   ["/admin", "Bookings"],
+  ["/admin/calendar", "Calendar"],
   ["/admin/services", "Services"],
   ["/admin/hours", "Hours"],
   ["/admin/clients", "Clients"],
+  ["/admin/profile", "Profile"],
 ] as const;
 
 export default function AdminNav() {

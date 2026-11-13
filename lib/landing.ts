@@ -58,6 +58,8 @@ export function initLanding() {
       wlEmailP: "you@email.com",
       wlSubmit: "Request my invite",
       wlBack: "Back",
+      findKicker: "Find us", findTitle: "Two locations. Same barber.",
+      findNote: "Same services and prices at both locations.", findOpen: "Open in Maps",
       wlPrivacy: "We only use this to send your invite. No spam, ever.",
       wlSuccessT: "You are on the list.",
       wlSuccessB: "Thanks, we will be in touch at the email you gave us the moment early access opens. Keep an eye on your inbox.",
@@ -103,6 +105,8 @@ export function initLanding() {
       wlEmailP: "du@email.com",
       wlSubmit: "Einladung anfordern",
       wlBack: "Zurück",
+      findKicker: "So findest du uns", findTitle: "Zwei Standorte. Derselbe Barber.",
+      findNote: "Gleiche Services und Preise an beiden Standorten.", findOpen: "In Maps öffnen",
       wlPrivacy: "Wir nutzen das nur für deine Einladung. Niemals Spam.",
       wlSuccessT: "Du bist auf der Liste.",
       wlSuccessB: "Danke, wir melden uns an der angegebenen E-Mail, sobald der Early Access startet. Behalte dein Postfach im Auge.",
@@ -148,6 +152,8 @@ export function initLanding() {
       wlEmailP: "you@email.com",
       wlSubmit: "Запросить приглашение",
       wlBack: "Назад",
+      findKicker: "Как нас найти", findTitle: "Две локации. Один барбер.",
+      findNote: "Одинаковые услуги и цены в обеих локациях.", findOpen: "Открыть в Maps",
       wlPrivacy: "Используем только для приглашения. Никакого спама.",
       wlSuccessT: "Ты в списке.",
       wlSuccessB: "Спасибо, мы напишем на указанную почту, как только откроется ранний доступ. Следи за входящими.",
@@ -193,6 +199,8 @@ export function initLanding() {
       wlEmailP: "toi@email.com",
       wlSubmit: "Demander mon invitation",
       wlBack: "Retour",
+      findKicker: "Nous trouver", findTitle: "Deux adresses. Même barbier.",
+      findNote: "Mêmes prestations et mêmes prix aux deux adresses.", findOpen: "Ouvrir dans Maps",
       wlPrivacy: "Uniquement pour t'envoyer ton invitation. Jamais de spam.",
       wlSuccessT: "Tu es sur la liste.",
       wlSuccessB: "Merci, on t'écrit à l'adresse indiquée dès l'ouverture de l'accès anticipé. Surveille ta boîte mail.",
@@ -238,6 +246,8 @@ export function initLanding() {
       wlEmailP: "tu@email.com",
       wlSubmit: "Pedir mi invitación",
       wlBack: "Volver",
+      findKicker: "Encuéntranos", findTitle: "Dos locales. El mismo barbero.",
+      findNote: "Mismos servicios y precios en ambos locales.", findOpen: "Abrir en Maps",
       wlPrivacy: "Solo lo usamos para enviarte tu invitación. Nunca spam.",
       wlSuccessT: "Estás en la lista.",
       wlSuccessB: "Gracias, te escribiremos al correo que nos diste en cuanto abra el acceso anticipado. Atento a tu bandeja.",
@@ -283,6 +293,8 @@ export function initLanding() {
       wlEmailP: "tu@email.com",
       wlSubmit: "Richiedi il mio invito",
       wlBack: "Indietro",
+      findKicker: "Dove siamo", findTitle: "Due sedi. Lo stesso barbiere.",
+      findNote: "Stessi servizi e prezzi in entrambe le sedi.", findOpen: "Apri in Maps",
       wlPrivacy: "Lo usiamo solo per inviarti l'invito. Mai spam.",
       wlSuccessT: "Sei in lista.",
       wlSuccessB: "Grazie, ti scriviamo all'email che ci hai dato appena apre l'accesso anticipato. Tieni d'occhio la posta.",
@@ -328,6 +340,8 @@ export function initLanding() {
       wlEmailP: "jij@email.com",
       wlSubmit: "Vraag mijn uitnodiging aan",
       wlBack: "Terug",
+      findKicker: "Vind ons", findTitle: "Twee locaties. Dezelfde barber.",
+      findNote: "Dezelfde diensten en prijzen op beide locaties.", findOpen: "Openen in Maps",
       wlPrivacy: "We gebruiken dit alleen voor je uitnodiging. Nooit spam.",
       wlSuccessT: "Je staat op de lijst.",
       wlSuccessB: "Bedankt, we mailen je op het opgegeven adres zodra de vroege toegang opent. Houd je inbox in de gaten.",
@@ -353,6 +367,12 @@ export function initLanding() {
     $$('[data-i18n-ph]').forEach(function (el) {
       var key = el.getAttribute('data-i18n-ph');
       if (t[key] != null) el.setAttribute('placeholder', t[key]);
+    });
+    $$('[data-weekdays]').forEach(function (el) {
+      var names = el.getAttribute('data-weekdays').split(',').map(function (d) {
+        return new Date(Date.UTC(2024, 0, 7 + Number(d))).toLocaleDateString(lang, { weekday: 'long', timeZone: 'UTC' });
+      });
+      el.textContent = names.join(' · ');
     });
     try { document.documentElement.setAttribute('lang', lang); } catch (e) {}
     var current = LANGS.filter(function (l) { return l.code === lang; })[0] || LANGS[0];
@@ -411,19 +431,30 @@ export function initLanding() {
   }
 
   /* ---------- Waitlist ---------- */
+  // The overlay gets its own history entry, so the browser/phone Back button closes it
+  // instead of leaving the whole site.
+  var wlPushed = false;
   function openWaitlist() {
     var wl = $('[data-waitlist]');
+    if (!wl.hidden) return;
     $('[data-waitlist-form]').hidden = false;
     $('[data-waitlist-success]').hidden = true;
     var form = $('[data-waitlist-submit]');
     if (form) form.reset();
     wl.hidden = false;
     try { document.body.style.overflow = 'hidden'; } catch (e) {}
+    try { history.pushState({ wl: 1 }, ''); wlPushed = true; } catch (e) {}
   }
-  function closeWaitlist() {
+  function hideWaitlist() {
     var wl = $('[data-waitlist]');
-    wl.hidden = true;
+    if (wl) wl.hidden = true;
+    wlPushed = false;
     try { document.body.style.overflow = ''; } catch (e) {}
+  }
+  // Close button / Escape: go back through history so the pushed entry is consumed.
+  function closeWaitlist() {
+    if (wlPushed && history.state && history.state.wl) { history.back(); return; }
+    hideWaitlist();
   }
   function submitWaitlist(e) {
     e.preventDefault();
@@ -564,6 +595,10 @@ export function initLanding() {
       var w = $('[data-waitlist]');
       if (e.key === 'Escape' && w && !w.hidden) closeWaitlist();
     });
+    // Browser/phone Back while the overlay is open just closes it.
+    var onPop = function () { var w = $('[data-waitlist]'); if (w && !w.hidden) hideWaitlist(); };
+    window.addEventListener('popstate', onPop);
+    disposers.push(function () { window.removeEventListener('popstate', onPop); });
 
     initReveal();
     initHeroVideo();

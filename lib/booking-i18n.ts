@@ -93,6 +93,11 @@ export const T = {
     back: "Back",
     bookAgain: "Book again",
     langLabel: "Language",
+    location: "Location",
+    openMaps: "Open in Maps",
+    onlyAt: "Showing days at {name} only.",
+    allLocations: "See all locations",
+    closed: "Closed",
   },
   de: {
     kicker: "Stuhl buchen",
@@ -141,6 +146,11 @@ export const T = {
     back: "Zurück",
     bookAgain: "Erneut buchen",
     langLabel: "Sprache",
+    location: "Standort",
+    openMaps: "In Maps öffnen",
+    onlyAt: "Es werden nur Tage bei {name} angezeigt.",
+    allLocations: "Alle Standorte anzeigen",
+    closed: "Geschlossen",
   },
 };
 

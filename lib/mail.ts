@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { fmtDateTime } from "./tz";
+import { fullAddress, mapsUrl, type Location } from "./locations-shared";
 
 const DEFAULT_SITE = () => (process.env.NEXT_PUBLIC_SITE_URL || "https://groomzmen.de").replace(/\/$/, "");
 
@@ -33,7 +34,11 @@ export type MailBooking = {
   ends_at: string;
   manage_token: string;
   service_name: string;
+  /** Where the appointment takes place (omit if unknown). */
+  location?: Pick<Location, "name" | "address" | "postcode_city" | "maps_url"> | null;
 };
+
+const icsEsc = (t: string) => t.replace(/[\\,;]/g, (c) => "\\" + c);
 
 function ics(b: MailBooking, site: string) {
   const f = (d: string) => new Date(d).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
@@ -48,7 +53,7 @@ function ics(b: MailBooking, site: string) {
     `DTSTART:${f(b.starts_at)}`,
     `DTEND:${f(b.ends_at)}`,
     `SUMMARY:GROOMS - ${b.service_name}`,
-    "LOCATION:GROOMS, Berlin",
+    `LOCATION:${icsEsc(b.location ? `${b.location.name}, ${fullAddress(b.location)}` : "GROOMS, Berlin")}`,
     `URL:${site}/booking/${b.manage_token}`,
     "END:VEVENT",
     "END:VCALENDAR",
@@ -74,8 +79,13 @@ async function send(to: string, subject: string, html: string, ical?: string) {
   }
 }
 
+const where = (b: MailBooking) =>
+  b.location
+    ? `<p style="margin:0 0 16px"><b>${esc(b.location.name)}</b><br>${esc(fullAddress(b.location))}<br><a href="${esc(mapsUrl(b.location))}">Open in Maps</a></p>`
+    : "";
+
 const details = (b: MailBooking) =>
-  `<p style="margin:0 0 6px"><b>${esc(b.service_name)}</b></p><p style="margin:0 0 16px">${esc(fmtDateTime(b.starts_at))} (Berlin time)</p>`;
+  `<p style="margin:0 0 6px"><b>${esc(b.service_name)}</b></p><p style="margin:0 0 ${b.location ? 6 : 16}px">${esc(fmtDateTime(b.starts_at))} (Berlin time)</p>${where(b)}`;
 const manage = (b: MailBooking, site: string) =>
   `<p><a href="${site}/booking/${b.manage_token}" style="background:#d62b1a;color:#fff;padding:12px 20px;text-decoration:none;display:inline-block">Manage / cancel booking</a></p>`;
 

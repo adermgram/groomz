@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import { BookHeading, BookHelp } from "../../components/BookText";
-import BookingBar from "../../components/BookingBar";
-import BookingFlow from "../../components/BookingFlow";
-import { admin } from "../../lib/supabase-admin";
+import BookPage from "../../components/BookPage";
 
 export const metadata: Metadata = {
   title: "Book a chair | GROOMS",
@@ -11,18 +8,6 @@ export const metadata: Metadata = {
 };
 export const dynamic = "force-dynamic";
 
-export default async function BookPage() {
-  const { data } = await admin()
-    .from("services")
-    .select("id,name,description,duration_min,price_cents")
-    .eq("active", true)
-    .order("sort");
-  return (
-    <main className="bk-page">
-      <BookingBar />
-      <BookHeading />
-      <BookingFlow services={data ?? []} />
-      <BookHelp />
-    </main>
-  );
+export default function Page() {
+  return <BookPage />;
 }
