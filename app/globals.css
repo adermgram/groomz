@@ -93,8 +93,8 @@ img { display: block; }
   gap: 0.7em;
   width: fit-content;
   padding: 1rem 1.6rem;
-  background: #e8321f;
-  border: 1.5px solid #e8321f;
+  background: var(--book);
+  border: 1.5px solid var(--book);
   color: #060608;
   font-family: 'Fragment Mono', monospace;
   font-weight: 400;
