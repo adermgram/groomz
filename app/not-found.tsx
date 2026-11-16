@@ -8,8 +8,8 @@ export default function NotFound() {
       <h1 className="h2">This chair&apos;s empty.</h1>
       <p style={{ color: "var(--ink-2)", maxWidth: "34rem" }}>The page you were after does not exist, or it moved. The cut you came for is still here, though.</p>
       <div style={{ display: "flex", gap: ".9rem", flexWrap: "wrap" }}>
-        <Link className="btn-book" href="/">Back to GROOMS →</Link>
-        <Link className="btn-book" style={{ background: "transparent", color: "var(--ink)" }} href="/book">Book now →</Link>
+        <Link className="btn-book" style={{ background: "transparent", color: "var(--ink)", borderColor: "var(--line)" }} href="/">Back to GROOMS →</Link>
+        <Link className="btn-book" href="/book">Book now →</Link>
       </div>
     </main>
   );

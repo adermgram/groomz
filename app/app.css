@@ -39,6 +39,9 @@
 .bk-slot.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 /* "Book now" buttons: #FFC107 / rgb(255, 193, 7) */
 :root { --book: #FFC107; }
+/* "Claim your early invite" (opens the waitlist) uses the same yellow */
+.hairprofile-actions .btn-accent { background: var(--book); border-color: var(--book); color: #060608; }
+.hairprofile-actions .btn-accent:hover { box-shadow: 0 14px 40px rgba(255, 193, 7, .35); }
 /* ---- locations ---- */
 .bk-loc-dot { display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; background: var(--accent); vertical-align: middle; flex: none; }
 .bk-loc-dot[data-loc="2"] { background: #3b82f6; }
