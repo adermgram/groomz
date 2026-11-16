@@ -126,7 +126,7 @@ export default function BookingFlow({ services, locationSlug }: { services: Serv
           <LocationBlock location={place} />
           <label className="field"><span className="field-label">{t.fullName}</span><input required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} autoComplete="name" /></label>
           <label className="field"><span className="field-label">{t.email}</span><input required type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} autoComplete="email" /></label>
-          <label className="field"><span className="field-label">{t.phone}</span><input type="tel" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} autoComplete="tel" /></label>
+          <label className="field"><span className="field-label">{t.phone}</span><input required type="tel" inputMode="tel" minLength={6} pattern={"[0-9+().\\-\\s/]{6,}"} value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} autoComplete="tel" /></label>
           <label className="field"><span className="field-label">{t.notes}</span><textarea rows={3} value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} placeholder={t.notesPh} /></label>
           {errText && <p className="bk-err" role="alert">{errText}</p>}
           <p className="bk-muted">{t.consent}</p>

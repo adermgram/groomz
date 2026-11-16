@@ -11,11 +11,11 @@ export async function POST(req: Request) {
   const iso = String(b?.starts_at ?? "");
   const client_name = String(b?.name ?? "").trim().slice(0, 120);
   const client_email = String(b?.email ?? "").trim().toLowerCase().slice(0, 200);
-  const client_phone = String(b?.phone ?? "").trim().slice(0, 40) || null;
+  const client_phone = String(b?.phone ?? "").trim().slice(0, 40); // required
   const notes = String(b?.notes ?? "").trim().slice(0, 500) || null;
   const start = new Date(iso);
 
-  if (!/^[0-9a-f-]{36}$/.test(service_id) || isNaN(+start) || !client_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(client_email)) {
+  if (!/^[0-9a-f-]{36}$/.test(service_id) || isNaN(+start) || !client_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(client_email) || client_phone.replace(/\D/g, "").length < 6) {
     return NextResponse.json({ error: "invalid" }, { status: 400 });
   }
 

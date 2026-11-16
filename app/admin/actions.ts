@@ -54,6 +54,7 @@ export async function createManualBooking(_: unknown, f: FormData) {
   const time = s(f, "time");
   const { data: svc } = await db.from("services").select("name,duration_min").eq("id", service_id).single();
   if (!svc || !date || !time || !s(f, "name")) return { error: "Fill service, date, time and name." };
+  if (s(f, "phone").replace(/\D/g, "").length < 6) return { error: "A phone number is required." };
   const start = berlinToUtc(date, Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5)));
   const end = new Date(start.getTime() + svc.duration_min * 60_000);
   const email = s(f, "email") || "walk-in@grooms.local";

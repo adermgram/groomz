@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { admin } from "../../../../lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
@@ -22,8 +23,11 @@ export default async function Clients() {
       <h2 className="ad-h">Clients ({map.size})</h2>
       {[...map.values()].map((c) => (
         <div className="ad-card" key={c.email}>
-          <div className="ad-row"><b>{c.name}</b><span className="ad-pill">{c.visits} booking{c.visits > 1 ? "s" : ""}</span></div>
-          <p className="ad-sub"><a href={`mailto:${c.email}`}>{c.email}</a>{c.phone && <> · {c.phone}</>}</p>
+          <div className="ad-row">
+            <b>{c.name}</b>
+            <Link className="ad-pill" href={`/admin/history?q=${encodeURIComponent(c.email)}`}>{c.visits} booking{c.visits > 1 ? "s" : ""} · history →</Link>
+          </div>
+          <p className="ad-sub"><a href={`mailto:${c.email}`}>{c.email}</a>{c.phone && <> · <a href={`tel:${c.phone}`}>{c.phone}</a></>}</p>
         </div>
       ))}
 

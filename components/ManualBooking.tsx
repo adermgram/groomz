@@ -12,7 +12,7 @@ export default function ManualBooking({ services, defaultDate }: { services: { i
         <label>Time<input type="time" name="time" required step={300} /></label>
         <label>Name<input name="name" required /></label>
         <label>Email (optional)<input type="email" name="email" /></label>
-        <label>Phone<input name="phone" /></label>
+        <label>Phone<input name="phone" type="tel" required minLength={6} /></label>
       </div>
       {st?.error && <p className="bk-err">{st.error}</p>}
       {st?.ok && <p className="bk-muted">Booking added.</p>}

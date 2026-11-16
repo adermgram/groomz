@@ -37,6 +37,33 @@
 .bk-slot { padding: .85rem .5rem; background: transparent; border: 1.5px solid var(--line); color: var(--ink); font-family: 'Fragment Mono', monospace; font-size: .9rem; cursor: pointer; }
 .bk-slot:hover { border-color: var(--accent); }
 .bk-slot.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+/* Waitlist form buttons share the same yellow */
+.waitlist-fields .btn-accent, .waitlist-success-close { background: var(--book); border-color: var(--book); color: #060608; }
+.waitlist-fields .btn-accent:hover, .waitlist-success-close:hover { box-shadow: 0 14px 40px rgba(255, 193, 7, .35); }
+/* ---- admin history ---- */
+.hist-list { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--bg-3); }
+.hist { border-bottom: 1px solid var(--line); }
+.hist:last-child { border-bottom: 0; }
+.hist > summary { list-style: none; display: grid; grid-template-columns: 5.4rem minmax(0, 1fr) auto; gap: .7rem; align-items: center; padding: .7rem .9rem; cursor: pointer; }
+.hist > summary::-webkit-details-marker { display: none; }
+.hist > summary:hover { background: var(--bg); }
+.hist[open] > summary { background: var(--bg); }
+.hist-when { display: flex; flex-direction: column; font-family: 'Fragment Mono', monospace; font-size: .74rem; line-height: 1.35; }
+.hist-when small, .hist-main small { color: var(--ink-3); font-size: .74rem; }
+.hist-main { display: flex; flex-direction: column; min-width: 0; }
+.hist-main b, .hist-main small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist-body { padding: .6rem; background: var(--bg); }
+.hist-body .ad-card { margin: 0; }
+.ad-pill.completed { color: #16a34a; border-color: #16a34a; }
+.ad-pill.no_show { color: #b45309; border-color: #b45309; }
+.ad-pill.cancelled { opacity: .7; }
+.hist-month { display: flex; align-items: center; gap: .6rem; margin: 1.4rem 0 .5rem; font-family: 'Bricolage Grotesque', sans-serif; font-size: 1rem; }
+.hist-month span { font-family: 'Fragment Mono', monospace; font-size: .68rem; padding: .1rem .5rem; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); }
+.hist-filters .ad-form { grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); }
+.hist-pager { display: flex; justify-content: space-between; align-items: center; margin: 1.2rem 0; gap: .6rem; }
+.hist-alert { border-color: var(--accent); gap: .2rem; color: var(--ink); }
+.hist-alert:hover { color: var(--ink); background: var(--bg); }
+.cal-link { color: var(--accent); }
 /* "Book now" buttons: #FFC107 / rgb(255, 193, 7) */
 :root { --book: #FFC107; }
 /* "Claim your early invite" (opens the waitlist) uses the same yellow */
